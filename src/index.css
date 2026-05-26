@@ -198,20 +198,114 @@ body {
   justify-content: flex-end;
   overflow: hidden;
 
-  /* reveal start-state */
+  /* Reveal start-state. The tilt is a static `rotate`, kept separate from the
+     animated `translate`/`scale` so the two never fight — and so the tilt
+     survives `prefers-reduced-motion`. */
   opacity: 0;
-  transform: translateY(40px) scale(0.94) rotate(-1deg);
-  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.3);
+  rotate: var(--tilt, 0deg);
+  translate: 0 40px;
+  scale: 0.94;
+  transition: opacity 0.5s ease,
+    translate 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.3),
+    scale 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.3);
 }
 .panel.is-visible {
   opacity: 1;
-  transform: translateY(0) scale(1) rotate(0deg);
+  translate: 0 0;
+  scale: 1;
 }
 
 /* Vary the panel background tints so the grid reads like printed plates. */
 .panel--lg   { background-image: radial-gradient(rgba(230, 57, 70, 0.20) 17%, transparent 18%); }
 .panel--wide { background-image: radial-gradient(rgba(241, 178, 17, 0.28) 17%, transparent 18%); }
 .panel--sm   { background-image: radial-gradient(rgba(42, 157, 74, 0.22) 17%, transparent 18%); }
+
+/* --- panel kinds: angled shapes, utility CTAs, about box, fx bursts -------- */
+/* (declared AFTER the size tints above so kind wins over size.) */
+
+/* Angled-corner panels. clip-path clips box-shadow, so shaped panels swap the
+   hard box-shadow for a matching drop-shadow (same trick as .tag). Only TOP
+   corners are folded — away from the bottom-anchored bubble content. */
+.panel--fold-tr {
+  clip-path: polygon(0 0, calc(100% - 30px) 0, 100% 30px, 100% 100%, 0 100%);
+  box-shadow: none;
+  filter: drop-shadow(8px 8px 0 var(--ink));
+}
+.panel--fold-tl {
+  clip-path: polygon(30px 0, 100% 0, 100% 100%, 0 100%, 0 30px);
+  box-shadow: none;
+  filter: drop-shadow(8px 8px 0 var(--ink));
+}
+
+/* About = origin-story narration: yellow plate + an inked caption label. */
+.panel--about { background-image: radial-gradient(rgba(241, 178, 17, 0.30) 17%, transparent 18%); }
+.about { display: flex; flex-direction: column; gap: 0.6rem; }
+.about__title {
+  align-self: flex-start;
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 2.8vw, 1.8rem);
+  letter-spacing: 1px;
+  background: var(--ink);
+  color: var(--yellow);
+  padding: 0.15rem 0.7rem;
+}
+.about__body {
+  margin: 0;
+  font-weight: 700;
+  font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+  line-height: 1.3;
+}
+
+/* CTA = a whole panel that is one big comic button; the anchor fills it. */
+.panel--cta { padding: 0; }
+.cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  text-decoration: none;
+  background-image: radial-gradient(rgba(20, 20, 20, 0.18) 18%, transparent 19%);
+  background-size: 16px 16px;
+  transition: transform 0.15s ease;
+}
+.cta--resume   { background-color: var(--red);    color: var(--paper); }
+.cta--linkedin { background-color: var(--blue);   color: var(--paper); }
+.cta--email    { background-color: var(--yellow); color: var(--ink); }
+.cta:hover { transform: translate(-2px, -2px); }
+.cta:focus-visible { outline: 4px solid var(--ink); outline-offset: -8px; }
+.cta__label {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 3vw, 2.1rem);
+  letter-spacing: 1px;
+  line-height: 1;
+  padding: 0 0.5rem;
+}
+.cta__sub {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+/* FX = a decorative burst floating in a gutter. No frame; just the starburst. */
+.panel--fx {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  background-image: none;
+  min-height: 0;
+  padding: 0.5rem;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+.panel--overlap { z-index: 2; margin-left: -2rem; }
 
 .panel__tags {
   position: absolute;
@@ -325,6 +419,10 @@ body {
   -webkit-text-stroke: 0.5px var(--ink);
 }
 
+/* Standalone decorative burst = a big tag. */
+.tag--lg { width: 150px; height: 150px; filter: drop-shadow(3px 3px 0 var(--ink)); }
+.tag--lg .tag__text { font-size: 1.7rem; max-width: 62%; }
+
 /* ----------------------------------------------------------------- footer -- */
 .footer {
   margin-top: clamp(2rem, 6vw, 4rem);
@@ -394,6 +492,17 @@ body {
   .comic-grid { grid-template-columns: repeat(2, 1fr); }
   .panel--sm, .panel--md, .panel--lg, .panel--wide { grid-column: span 2; }
   .hero__name { line-height: 0.9; }
+
+  /* Calm the page down on small screens: no tilt, no angled cuts, no overlap,
+     and drop the purely-decorative bursts so the stack reads cleanly. */
+  .panel { rotate: 0deg; }
+  .panel--fold-tr, .panel--fold-tl {
+    clip-path: none;
+    filter: none;
+    box-shadow: var(--shadow-hard);
+  }
+  .panel--overlap { margin: 0; z-index: auto; }
+  .panel--fx { display: none; }
 }
 
 /* --------------------------------------------------- reduced motion guard -- */
@@ -401,8 +510,11 @@ body {
   html { scroll-behavior: auto; }
   .panel {
     opacity: 1;
-    transform: none;
+    translate: none;
+    scale: none;
     transition: none;
+    /* `rotate` (the static tilt) is intentionally preserved — it's layout
+       character, not motion. */
   }
   .hero__scroll { animation: none; }
 }

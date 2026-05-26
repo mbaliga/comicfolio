@@ -1,5 +1,5 @@
 import ComicPanel from './ComicPanel.jsx'
-import { projects } from '../data/portfolio.js'
+import { items } from '../data/portfolio.js'
 
 export default function ComicGrid() {
   return (
@@ -8,8 +8,8 @@ export default function ComicGrid() {
         <span>SELECTED WORK</span>
       </div>
       <div className="comic-grid">
-        {projects.map((project) => (
-          <ComicPanel key={project.id} project={project} />
+        {items.map((item) => (
+          <ComicPanel key={item.id} item={item} />
         ))}
       </div>
     </section>
