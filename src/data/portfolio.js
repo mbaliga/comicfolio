@@ -31,17 +31,14 @@ export const contact = {
   ],
 }
 
-// The comic page is one ordered list of panels. Array order = reading order =
-// the order panels pop in on scroll. Each panel has a `kind`:
-//   'project' — a case study in a speech/thought bubble (the default)
-//   'cta'     — a utility "button" panel (résumé, LinkedIn, email)
-//   'about'   — an origin-story narration box
-//   'fx'      — a decorative sound-effect burst (purely cosmetic)
+// The comic page is one ordered list of panels. ComicGrid packs them into
+// "tiers" (rows) and clips each one into a leaning parallelogram/trapezoid, so
+// the gutters run diagonally like a real comic page. Array order = reading
+// order = the order panels pop in on scroll.
 //
-// Presentation hints shared by every kind:
-//   size : 'sm' | 'md' | 'lg' | 'wide'  → grid spans 2 / 3 / 4 / 6 columns
-//   tilt : degrees of static rotation (keep small for content; bold for fx)
-//   shape: 'fold-tr' | 'fold-tl'        → clips a top corner into an angled panel
+//   kind : 'project' (default) | 'cta' | 'about' | 'fx'
+//   size : 'sm' | 'md' | 'lg' | 'wide'  → relative width within a tier
+//          (a 'wide' panel takes its own full-width tier)
 export const items = [
   {
     kind: 'project',
@@ -51,8 +48,6 @@ export const items = [
     tags: ['New', 'AI'],
     bubble: 'speech',
     size: 'lg',
-    tilt: -2,
-    shape: 'fold-tr',
   },
   {
     kind: 'cta',
@@ -63,7 +58,6 @@ export const items = [
     href: '#', // placeholder — drop in a real /resume.pdf later
     ariaLabel: 'Download résumé (PDF)',
     size: 'sm',
-    tilt: 2,
   },
   {
     kind: 'project',
@@ -73,7 +67,6 @@ export const items = [
     tags: ['Enterprise'],
     bubble: 'speech',
     size: 'md',
-    tilt: 1.5,
   },
   {
     kind: 'project',
@@ -83,23 +76,6 @@ export const items = [
     tags: ['Mobile', '0→1'],
     bubble: 'thought',
     size: 'md',
-    tilt: -1.5,
-  },
-  {
-    kind: 'fx',
-    id: 'fx-boom',
-    text: 'BOOM!',
-    color: '#e63946',
-    size: 'sm',
-    tilt: -8,
-  },
-  {
-    kind: 'about',
-    id: 'about-origin',
-    title: 'ORIGIN STORY',
-    body: 'Bitten by a radioactive Figma file at 22 — now I turn product chaos into clean, shippable design, one issue at a time.',
-    size: 'md',
-    tilt: 1,
   },
   {
     kind: 'project',
@@ -109,8 +85,6 @@ export const items = [
     tags: ['Design System', 'Enterprise'],
     bubble: 'speech',
     size: 'wide',
-    tilt: -1,
-    shape: 'fold-tl',
   },
   {
     kind: 'project',
@@ -120,7 +94,20 @@ export const items = [
     tags: ['AI', 'Award'],
     bubble: 'thought',
     size: 'md',
-    tilt: 2,
+  },
+  {
+    kind: 'fx',
+    id: 'fx-boom',
+    text: 'BOOM!',
+    color: '#e63946',
+    size: 'sm',
+  },
+  {
+    kind: 'about',
+    id: 'about-origin',
+    title: 'ORIGIN STORY',
+    body: 'Bitten by a radioactive Figma file at 22 — now I turn product chaos into clean, shippable design, one issue at a time.',
+    size: 'md',
   },
   {
     kind: 'cta',
@@ -131,16 +118,6 @@ export const items = [
     href: '#', // placeholder — swap for your profile URL
     ariaLabel: 'Nova Kane on LinkedIn',
     size: 'sm',
-    tilt: -2,
-  },
-  {
-    kind: 'fx',
-    id: 'fx-zap',
-    text: 'ZAP!',
-    color: '#1d75c9',
-    size: 'sm',
-    tilt: 7,
-    overlap: true,
   },
   {
     kind: 'project',
@@ -150,7 +127,6 @@ export const items = [
     tags: ['Research'],
     bubble: 'speech',
     size: 'sm',
-    tilt: 1.5,
   },
   {
     kind: 'cta',
@@ -161,14 +137,12 @@ export const items = [
     href: `mailto:${contact.email}`,
     ariaLabel: `Email ${contact.email}`,
     size: 'sm',
-    tilt: -1.5,
   },
   {
     kind: 'fx',
-    id: 'fx-pow',
-    text: 'POW!',
-    color: '#2a9d4a',
+    id: 'fx-zap',
+    text: 'ZAP!',
+    color: '#1d75c9',
     size: 'sm',
-    tilt: -6,
   },
 ]

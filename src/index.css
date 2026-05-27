@@ -168,43 +168,42 @@ body {
   transform: rotate(-1.5deg);
 }
 
-/* ------------------------------------------------------------- comic grid -- */
-.comic-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: clamp(0.75rem, 2vw, 1.5rem);
-  grid-auto-flow: dense;
-}
-
-/* Panel size → grid spans. */
-.panel--sm   { grid-column: span 2; }
-.panel--md   { grid-column: span 3; }
-.panel--lg   { grid-column: span 4; }
-.panel--wide { grid-column: span 6; }
-
-/* ----------------------------------------------------------------- panel -- */
-.panel {
-  position: relative;
-  min-height: 240px;
-  border: var(--border);
-  border-radius: 4px;
-  box-shadow: var(--shadow-hard);
-  background-color: var(--paper);
-  background-image: radial-gradient(rgba(29, 117, 201, 0.22) 17%, transparent 18%);
-  background-size: 14px 14px;
-  padding: 1.4rem;
+/* -------------------------------------------------------------- comic page -- */
+/* The work section is a stack of comic "tiers" (rows). Within a tier, panels
+   are clipped to leaning parallelograms/trapezoids so the gutters run on a
+   diagonal — like a real comic page — while the outer page edges stay straight. */
+.comic-page {
+  --slant: clamp(22px, 3.2vw, 44px);
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  overflow: hidden;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+}
+.tier {
+  display: flex;
+  align-items: stretch;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+}
 
-  /* Reveal start-state. The tilt is a static `rotate`, kept separate from the
-     animated `translate`/`scale` so the two never fight — and so the tilt
-     survives `prefers-reduced-motion`. */
+/* ----------------------------------------------------------------- panel -- */
+/* Two layers: the outer is solid ink and clipped to the panel polygon — its
+   5px padding becomes the ink border, even along the diagonals. The inner
+   carries the paper/halftone fill + content. clip-path clips box-shadow, so the
+   hard offset shadow comes from a drop-shadow that follows the slanted edge. */
+.panel {
+  position: relative;
+  flex: var(--w, 1) 1 0;
+  min-width: 0;
+  min-height: 240px;
+  display: flex;
+  background: var(--ink);
+  padding: 5px;
+  clip-path: var(--clip, none);
+  filter: drop-shadow(7px 7px 0 var(--ink));
+
+  /* Reveal: animate translate/scale/opacity only — the shape carries the look. */
   opacity: 0;
-  rotate: var(--tilt, 0deg);
   translate: 0 40px;
-  scale: 0.94;
+  scale: 0.96;
   transition: opacity 0.5s ease,
     translate 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.3),
     scale 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.3);
@@ -215,30 +214,29 @@ body {
   scale: 1;
 }
 
-/* Vary the panel background tints so the grid reads like printed plates. */
-.panel--lg   { background-image: radial-gradient(rgba(230, 57, 70, 0.20) 17%, transparent 18%); }
-.panel--wide { background-image: radial-gradient(rgba(241, 178, 17, 0.28) 17%, transparent 18%); }
-.panel--sm   { background-image: radial-gradient(rgba(42, 157, 74, 0.22) 17%, transparent 18%); }
-
-/* --- panel kinds: angled shapes, utility CTAs, about box, fx bursts -------- */
-/* (declared AFTER the size tints above so kind wins over size.) */
-
-/* Angled-corner panels. clip-path clips box-shadow, so shaped panels swap the
-   hard box-shadow for a matching drop-shadow (same trick as .tag). Only TOP
-   corners are folded — away from the bottom-anchored bubble content. */
-.panel--fold-tr {
-  clip-path: polygon(0 0, calc(100% - 30px) 0, 100% 30px, 100% 100%, 0 100%);
-  box-shadow: none;
-  filter: drop-shadow(8px 8px 0 var(--ink));
+.panel__inner {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  clip-path: var(--clip, none);
+  background-color: var(--paper);
+  background-image: radial-gradient(rgba(29, 117, 201, 0.22) 17%, transparent 18%);
+  background-size: 14px 14px;
+  /* extra side padding so content clears the slanted edges */
+  padding: 1.4rem calc(1.3rem + var(--slant, 0px) * 0.55);
 }
-.panel--fold-tl {
-  clip-path: polygon(30px 0, 100% 0, 100% 100%, 0 100%, 0 30px);
-  box-shadow: none;
-  filter: drop-shadow(8px 8px 0 var(--ink));
-}
+
+/* Vary the inner tints so tiers read like printed plates. */
+.panel--lg   .panel__inner { background-image: radial-gradient(rgba(230, 57, 70, 0.20) 17%, transparent 18%); }
+.panel--wide .panel__inner { background-image: radial-gradient(rgba(241, 178, 17, 0.28) 17%, transparent 18%); }
+.panel--sm   .panel__inner { background-image: radial-gradient(rgba(42, 157, 74, 0.22) 17%, transparent 18%); }
+
+/* --- panel kinds: utility CTAs, about box, fx bursts ----------------------- */
 
 /* About = origin-story narration: yellow plate + an inked caption label. */
-.panel--about { background-image: radial-gradient(rgba(241, 178, 17, 0.30) 17%, transparent 18%); }
+.panel--about .panel__inner { background-image: radial-gradient(rgba(241, 178, 17, 0.30) 17%, transparent 18%); }
 .about { display: flex; flex-direction: column; gap: 0.6rem; }
 .about__title {
   align-self: flex-start;
@@ -256,8 +254,8 @@ body {
   line-height: 1.3;
 }
 
-/* CTA = a whole panel that is one big comic button; the anchor fills it. */
-.panel--cta { padding: 0; }
+/* CTA = a whole panel that is one big comic button; the anchor fills the inner. */
+.panel--cta .panel__inner { padding: 0; }
 .cta {
   display: flex;
   flex-direction: column;
@@ -293,29 +291,29 @@ body {
   opacity: 0.9;
 }
 
-/* FX = a decorative burst floating in a gutter. No frame; just the starburst. */
+/* FX = a decorative burst floating in a tier. No frame; just the starburst. */
 .panel--fx {
-  border: none;
-  box-shadow: none;
-  background: transparent;
-  background-image: none;
+  flex: var(--w, 0.6) 1 0;
   min-height: 0;
+  background: none;
   padding: 0.5rem;
+  clip-path: none;
+  filter: none;
   display: grid;
   place-items: center;
   pointer-events: none;
 }
-.panel--overlap { z-index: 2; margin-left: -2rem; }
 
 .panel__tags {
   position: absolute;
-  top: 0.8rem;
-  right: 0.8rem;
+  top: 0.7rem;
+  right: calc(0.6rem + var(--slant, 0px) * 0.5);
+  z-index: 1;
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
   justify-content: flex-end;
-  max-width: 70%;
+  max-width: 68%;
 }
 
 /* ------------------------------------------------------------ speech bubble */
@@ -489,19 +487,13 @@ body {
 
 /* ------------------------------------------------------------- responsive -- */
 @media (max-width: 760px) {
-  .comic-grid { grid-template-columns: repeat(2, 1fr); }
-  .panel--sm, .panel--md, .panel--lg, .panel--wide { grid-column: span 2; }
   .hero__name { line-height: 0.9; }
 
-  /* Calm the page down on small screens: no tilt, no angled cuts, no overlap,
-     and drop the purely-decorative bursts so the stack reads cleanly. */
-  .panel { rotate: 0deg; }
-  .panel--fold-tr, .panel--fold-tl {
-    clip-path: none;
-    filter: none;
-    box-shadow: var(--shadow-hard);
-  }
-  .panel--overlap { margin: 0; z-index: auto; }
+  /* Stack into a clean single column of rectangles. */
+  .comic-page { --slant: 0px; }
+  .tier { flex-direction: column; }
+  .panel { flex: 0 0 auto; width: 100%; clip-path: none; }
+  .panel__inner { clip-path: none; padding: 1.4rem; }
   .panel--fx { display: none; }
 }
 
@@ -513,8 +505,6 @@ body {
     translate: none;
     scale: none;
     transition: none;
-    /* `rotate` (the static tilt) is intentionally preserved — it's layout
-       character, not motion. */
   }
   .hero__scroll { animation: none; }
 }
