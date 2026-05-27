@@ -1,0 +1,510 @@
+/* ===========================================================================
+   COMICFOLIO — comic-book portfolio styles
+   Palette, halftone primitives, panels, bubbles, starburst tags, hero logo.
+   =========================================================================== */
+
+:root {
+  --ink: #141414;
+  --paper: #f6ecd4;
+  --paper-2: #efe2c0;
+  --red: #e63946;
+  --blue: #1d75c9;
+  --yellow: #f1b211;
+  --green: #2a9d4a;
+
+  --border: 5px solid var(--ink);
+  --shadow-hard: 8px 8px 0 var(--ink);
+  --shadow-hard-sm: 5px 5px 0 var(--ink);
+
+  --font-display: 'Bangers', system-ui, sans-serif;
+  --font-body: 'Comic Neue', 'Comic Sans MS', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background-color: var(--paper);
+  /* Ben-Day halftone wash across the whole page. */
+  background-image: radial-gradient(var(--paper-2) 22%, transparent 23%),
+    radial-gradient(var(--paper-2) 22%, transparent 23%);
+  background-position: 0 0, 9px 9px;
+  background-size: 18px 18px;
+}
+
+/* ---------------------------------------------------------------- layout -- */
+.page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(0.75rem, 2vw, 1.5rem);
+}
+
+/* ------------------------------------------------------------------ hero -- */
+.hero {
+  position: relative;
+  border: var(--border);
+  border-radius: 4px;
+  box-shadow: var(--shadow-hard);
+  background-color: var(--yellow);
+  background-image: radial-gradient(rgba(20, 20, 20, 0.18) 18%, transparent 19%);
+  background-size: 16px 16px;
+  padding: clamp(2.5rem, 7vw, 6rem) clamp(1.25rem, 5vw, 4rem);
+  text-align: center;
+  overflow: hidden;
+  margin-bottom: clamp(1rem, 3vw, 2rem);
+}
+
+.hero__corner {
+  position: absolute;
+  top: 0;
+  font-family: var(--font-display);
+  letter-spacing: 1px;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0.4rem 0.9rem;
+  font-size: clamp(0.8rem, 2vw, 1.1rem);
+}
+.hero__corner--issue {
+  left: 0;
+  border-bottom-right-radius: 10px;
+}
+.hero__corner--price {
+  right: 0;
+  background: var(--red);
+  border-bottom-left-radius: 10px;
+}
+
+.hero__kicker {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 3.5vw, 2rem);
+  letter-spacing: 3px;
+  margin: 0 0 0.5rem;
+  color: var(--ink);
+  transform: rotate(-2deg);
+}
+
+.hero__name {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1em;
+  line-height: 0.82;
+}
+
+.hero__word {
+  position: relative;
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 18vw, 11rem);
+  letter-spacing: 2px;
+  color: var(--red);
+  -webkit-text-stroke: 3px var(--ink);
+  /* Stacked offset shadow = the layered cover-logo look. */
+  text-shadow: 4px 4px 0 var(--ink), 8px 8px 0 var(--blue),
+    11px 11px 0 var(--ink);
+  transform: rotate(-1.5deg);
+}
+.hero__word:nth-child(even) {
+  transform: rotate(1.5deg);
+  color: var(--paper);
+}
+
+.hero__tagline {
+  display: inline-block;
+  margin-top: 1.4rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 3vw, 1.8rem);
+  letter-spacing: 4px;
+  background: var(--ink);
+  color: var(--yellow);
+  padding: 0.35rem 1.2rem;
+  transform: rotate(-1deg);
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.hero__blurb {
+  max-width: 40ch;
+  margin: 1.4rem auto 0;
+  font-size: clamp(1rem, 2.2vw, 1.25rem);
+  font-weight: 700;
+}
+
+.hero__scroll {
+  margin-top: 2rem;
+  font-family: var(--font-display);
+  letter-spacing: 3px;
+  font-size: 1.2rem;
+  animation: bob 1.6s ease-in-out infinite;
+}
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+/* --------------------------------------------------------- section banner -- */
+.section-banner {
+  display: flex;
+  justify-content: center;
+  margin: clamp(1.5rem, 4vw, 3rem) 0;
+}
+.section-banner span {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 5vw, 3rem);
+  letter-spacing: 4px;
+  color: var(--paper);
+  background: var(--red);
+  border: var(--border);
+  box-shadow: var(--shadow-hard-sm);
+  padding: 0.3rem 1.6rem;
+  transform: rotate(-1.5deg);
+}
+
+/* -------------------------------------------------------------- comic page -- */
+/* The work section is a stack of comic "tiers" (rows). Within a tier, panels
+   are clipped to leaning parallelograms/trapezoids so the gutters run on a
+   diagonal — like a real comic page — while the outer page edges stay straight. */
+.comic-page {
+  --slant: clamp(22px, 3.2vw, 44px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+}
+.tier {
+  display: flex;
+  align-items: stretch;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+}
+
+/* ----------------------------------------------------------------- panel -- */
+/* Two layers: the outer is solid ink and clipped to the panel polygon — its
+   5px padding becomes the ink border, even along the diagonals. The inner
+   carries the paper/halftone fill + content. clip-path clips box-shadow, so the
+   hard offset shadow comes from a drop-shadow that follows the slanted edge. */
+.panel {
+  position: relative;
+  flex: var(--w, 1) 1 0;
+  min-width: 0;
+  min-height: 240px;
+  display: flex;
+  background: var(--ink);
+  padding: 5px;
+  clip-path: var(--clip, none);
+  filter: drop-shadow(7px 7px 0 var(--ink));
+
+  /* Reveal: animate translate/scale/opacity only — the shape carries the look. */
+  opacity: 0;
+  translate: 0 40px;
+  scale: 0.96;
+  transition: opacity 0.5s ease,
+    translate 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.3),
+    scale 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.3);
+}
+.panel.is-visible {
+  opacity: 1;
+  translate: 0 0;
+  scale: 1;
+}
+
+.panel__inner {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  clip-path: var(--clip, none);
+  background-color: var(--paper);
+  background-image: radial-gradient(rgba(29, 117, 201, 0.22) 17%, transparent 18%);
+  background-size: 14px 14px;
+  /* extra side padding so content clears the slanted edges */
+  padding: 1.4rem calc(1.3rem + var(--slant, 0px) * 0.55);
+}
+
+/* Vary the inner tints so tiers read like printed plates. */
+.panel--lg   .panel__inner { background-image: radial-gradient(rgba(230, 57, 70, 0.20) 17%, transparent 18%); }
+.panel--wide .panel__inner { background-image: radial-gradient(rgba(241, 178, 17, 0.28) 17%, transparent 18%); }
+.panel--sm   .panel__inner { background-image: radial-gradient(rgba(42, 157, 74, 0.22) 17%, transparent 18%); }
+
+/* --- panel kinds: utility CTAs, about box, fx bursts ----------------------- */
+
+/* About = origin-story narration: yellow plate + an inked caption label. */
+.panel--about .panel__inner { background-image: radial-gradient(rgba(241, 178, 17, 0.30) 17%, transparent 18%); }
+.about { display: flex; flex-direction: column; gap: 0.6rem; }
+.about__title {
+  align-self: flex-start;
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 2.8vw, 1.8rem);
+  letter-spacing: 1px;
+  background: var(--ink);
+  color: var(--yellow);
+  padding: 0.15rem 0.7rem;
+}
+.about__body {
+  margin: 0;
+  font-weight: 700;
+  font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+  line-height: 1.3;
+}
+
+/* CTA = a whole panel that is one big comic button; the anchor fills the inner. */
+.panel--cta .panel__inner { padding: 0; }
+.cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  text-decoration: none;
+  background-image: radial-gradient(rgba(20, 20, 20, 0.18) 18%, transparent 19%);
+  background-size: 16px 16px;
+  transition: transform 0.15s ease;
+}
+.cta--resume   { background-color: var(--red);    color: var(--paper); }
+.cta--linkedin { background-color: var(--blue);   color: var(--paper); }
+.cta--email    { background-color: var(--yellow); color: var(--ink); }
+.cta:hover { transform: translate(-2px, -2px); }
+.cta:focus-visible { outline: 4px solid var(--ink); outline-offset: -8px; }
+.cta__label {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 3vw, 2.1rem);
+  letter-spacing: 1px;
+  line-height: 1;
+  padding: 0 0.5rem;
+}
+.cta__sub {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+/* FX = a decorative burst floating in a tier. No frame; just the starburst. */
+.panel--fx {
+  flex: var(--w, 0.6) 1 0;
+  min-height: 0;
+  background: none;
+  padding: 0.5rem;
+  clip-path: none;
+  filter: none;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.panel__tags {
+  position: absolute;
+  top: 0.7rem;
+  right: calc(0.6rem + var(--slant, 0px) * 0.5);
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  max-width: 68%;
+}
+
+/* ------------------------------------------------------------ speech bubble */
+.bubble-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.bubble {
+  position: relative;
+  align-self: flex-start;
+  background: var(--paper);
+  border: var(--border);
+  padding: 0.7rem 1.1rem;
+  max-width: 90%;
+  box-shadow: var(--shadow-hard-sm);
+}
+.bubble--speech { border-radius: 26px; }
+.bubble--thought { border-radius: 40px; }
+
+.bubble__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 3.4vw, 2.3rem);
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+/* speech tail: a triangle poking down-left */
+.bubble--speech::after {
+  content: '';
+  position: absolute;
+  bottom: -18px;
+  left: 28px;
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 0 solid transparent;
+  border-top: 22px solid var(--ink);
+}
+.bubble--speech::before {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 31px;
+  width: 0;
+  height: 0;
+  border-left: 9px solid transparent;
+  border-top: 14px solid var(--paper);
+  z-index: 1;
+}
+
+/* thought tail: trailing dots */
+.bubble--thought::after {
+  content: '';
+  position: absolute;
+  bottom: -22px;
+  left: 24px;
+  width: 14px;
+  height: 14px;
+  background: var(--paper);
+  border: 4px solid var(--ink);
+  border-radius: 50%;
+  box-shadow: -14px 12px 0 -2px var(--ink), -10px 8px 0 0 var(--paper);
+}
+
+.bubble__blurb {
+  margin: 0;
+  font-weight: 700;
+  font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+  max-width: 50ch;
+}
+
+/* -------------------------------------------------------------------- tag -- */
+.tag {
+  display: inline-grid;
+  place-items: center;
+  width: 86px;
+  height: 86px;
+  padding: 0;
+  background: var(--tag-color);
+  color: var(--paper);
+  transform: rotate(var(--tag-rotate));
+  filter: drop-shadow(2px 2px 0 var(--ink));
+  /* starburst */
+  clip-path: polygon(
+    50% 0%, 61% 17%, 79% 12%, 76% 31%, 95% 35%, 82% 50%, 95% 65%,
+    76% 69%, 79% 88%, 61% 83%, 50% 100%, 39% 83%, 21% 88%, 24% 69%,
+    5% 65%, 18% 50%, 5% 35%, 24% 31%, 21% 12%, 39% 17%
+  );
+}
+.tag__text {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  line-height: 0.85;
+  text-align: center;
+  /* keep words inside the star's central safe zone so points don't clip them */
+  max-width: 56%;
+  overflow-wrap: anywhere;
+  -webkit-text-stroke: 0.5px var(--ink);
+}
+
+/* Standalone decorative burst = a big tag. */
+.tag--lg { width: 150px; height: 150px; filter: drop-shadow(3px 3px 0 var(--ink)); }
+.tag--lg .tag__text { font-size: 1.7rem; max-width: 62%; }
+
+/* ----------------------------------------------------------------- footer -- */
+.footer {
+  margin-top: clamp(2rem, 6vw, 4rem);
+  text-align: center;
+}
+.footer__continued {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 4vw, 2.2rem);
+  letter-spacing: 3px;
+  transform: rotate(-2deg);
+  margin-bottom: 1.2rem;
+  color: var(--ink);
+}
+.footer__panel {
+  border: var(--border);
+  border-radius: 4px;
+  box-shadow: var(--shadow-hard);
+  background: var(--blue);
+  background-image: radial-gradient(rgba(20, 20, 20, 0.18) 18%, transparent 19%);
+  background-size: 16px 16px;
+  padding: clamp(2rem, 5vw, 3.5rem);
+  color: var(--paper);
+}
+.footer__title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 7vw, 4rem);
+  letter-spacing: 2px;
+  margin: 0 0 1rem;
+  -webkit-text-stroke: 2px var(--ink);
+  text-shadow: 4px 4px 0 var(--ink);
+}
+.footer__email {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 3vw, 1.8rem);
+  letter-spacing: 1px;
+  color: var(--ink);
+  background: var(--yellow);
+  border: var(--border);
+  padding: 0.4rem 1.2rem;
+  text-decoration: none;
+  box-shadow: var(--shadow-hard-sm);
+  transition: transform 0.15s ease;
+}
+.footer__email:hover { transform: translate(-2px, -2px); }
+.footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-top: 1.6rem;
+}
+.footer__link {
+  font-family: var(--font-display);
+  letter-spacing: 1px;
+  color: var(--paper);
+  background: var(--ink);
+  padding: 0.35rem 1rem;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: transform 0.15s ease;
+}
+.footer__link:hover { transform: translateY(-3px); }
+
+/* ------------------------------------------------------------- responsive -- */
+@media (max-width: 760px) {
+  .hero__name { line-height: 0.9; }
+
+  /* Stack into a clean single column of rectangles. */
+  .comic-page { --slant: 0px; }
+  .tier { flex-direction: column; }
+  .panel { flex: 0 0 auto; width: 100%; clip-path: none; }
+  .panel__inner { clip-path: none; padding: 1.4rem; }
+  .panel--fx { display: none; }
+}
+
+/* --------------------------------------------------- reduced motion guard -- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .panel {
+    opacity: 1;
+    translate: none;
+    scale: none;
+    transition: none;
+  }
+  .hero__scroll { animation: none; }
+}
